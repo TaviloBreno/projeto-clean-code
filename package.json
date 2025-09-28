@@ -50,7 +50,9 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@types/aws-sdk": "^0.0.42",
     "@types/multer": "^2.0.0",
+    "aws-sdk": "^2.1692.0",
     "axios": "^1.12.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",
