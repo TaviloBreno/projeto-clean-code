@@ -1,7 +1,7 @@
 import { loginPath } from './paths'
 import { authenticationErrorComponent, serverErrorComponent, validationErrorComponent } from './components'
 
-export const swaggerConfig = {
+const swaggerConfig = {
   openapi: '3.0.0',
   info: {
     title: 'Facebook Login API',
@@ -35,3 +35,5 @@ export const swaggerConfig = {
     }
   }
 }
+
+export default swaggerConfig
