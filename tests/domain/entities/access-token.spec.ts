@@ -8,10 +8,13 @@ describe('AccessToken', () => {
   })
 
   it('should create with correct expiration date', () => {
+    jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
     const expirationInMs = 1000
     const sut = AccessToken.create('any_value', expirationInMs)
 
-    expect(sut.getExpirationDate).toEqual(new Date(Date.now() + expirationInMs))
+    expect(sut.getExpirationDate).toEqual(new Date('2021-01-01T00:00:01.000Z'))
+
+    jest.useRealTimers()
   })
 
   it('should return false if token is not expired', () => {

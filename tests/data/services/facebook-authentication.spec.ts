@@ -81,9 +81,13 @@ describe('FacebookAuthenticationService', () => {
   })
 
   it('should return an AccessToken on success', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+
     const authResult = await sut.perform({ token })
 
     expect(authResult).toEqual(AccessToken.create('any_generated_token', AccessToken.expirationInMs))
+
+    jest.useRealTimers()
   })
 
   it('should rethrow if LoadFacebookUser throws', async () => {
