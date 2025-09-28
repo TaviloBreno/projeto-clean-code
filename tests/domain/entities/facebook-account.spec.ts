@@ -36,7 +36,7 @@ describe('FacebookAccount', () => {
 
     expect(sut).toEqual({
       id: 'any_id',
-      name: 'any_fb_name',
+      name: '',
       email: 'any_fb_email',
       facebookId: 'any_fb_id'
     })

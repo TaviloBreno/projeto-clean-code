@@ -18,7 +18,11 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
     const fbData = await this.facebookApi.loadUser({ token })
     if (fbData !== undefined) {
       const accountData = await this.userAccountRepo.load({ email: fbData.email })
-      const fbAccount = new FacebookAccount(fbData, accountData)
+      const fbAccount = new FacebookAccount({
+        id: fbData.facebookId,
+        name: fbData.name,
+        email: fbData.email
+      }, accountData)
       const { id } = await this.userAccountRepo.saveWithFacebook(fbAccount)
 
       const accessToken = await this.crypto.generate({
@@ -28,5 +32,6 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
 
       return AccessToken.create(accessToken, AccessToken.expirationInMs)
     }
+    return undefined
   }
 }

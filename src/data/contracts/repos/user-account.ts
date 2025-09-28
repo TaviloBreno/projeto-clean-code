@@ -8,8 +8,8 @@ export namespace LoadUserAccount {
   }
 
   export type Result = {
-    id: string
-    name: string
+    id?: string
+    name?: string
   } | undefined
 }
 
@@ -19,7 +19,7 @@ export interface SaveFacebookAccount {
 
 export namespace SaveFacebookAccount {
   export interface Params {
-    id?: string
+    id: string | undefined
     email: string
     name: string
     facebookId: string
