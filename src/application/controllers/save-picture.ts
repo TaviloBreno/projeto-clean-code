@@ -35,9 +35,7 @@ export class SavePictureController extends Controller {
 
   override buildValidators (httpRequest: HttpRequestWithFile): Validator | undefined {
     if (!httpRequest.file) {
-      return {
-        validate: () => new Error('file is required')
-      }
+      return undefined
     }
 
     const validators = ValidationBuilder

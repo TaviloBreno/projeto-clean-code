@@ -1,8 +1,8 @@
 import { setupChangeProfilePicture } from '@/data/services/change-profile-picture'
 import { type ChangeProfilePicture } from '@/domain/use-cases/change-profile-picture'
-import { makeFileStorage } from '@/main/factories/infra/file-storage'
-import { makeUserProfileRepo } from '@/main/factories/repos/user-profile'
+import { makeAwsS3FileStorage } from '@/main/factories/infra/aws-s3-file-storage'
+import { makePgUserProfileRepository } from '@/main/factories/repos/pg-user-profile'
 
 export const makeChangeProfilePicture = (): ChangeProfilePicture => {
-  return setupChangeProfilePicture(makeFileStorage(), makeUserProfileRepo())
+  return setupChangeProfilePicture(makeAwsS3FileStorage(), makePgUserProfileRepository())
 }
