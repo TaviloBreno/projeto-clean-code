@@ -2,6 +2,7 @@ import { Controller } from '@/application/controllers/controller'
 import { type HttpRequest, type HttpResponse, ok } from '@/application/helpers/http'
 import { type ChangeProfilePicture } from '@/domain/use-cases/change-profile-picture'
 import { type Validator } from '@/application/validation'
+import { ValidationBuilder } from '@/application/validation/validation-builder'
 
 interface MulterFile {
   buffer: Buffer
@@ -32,7 +33,27 @@ export class SavePictureController extends Controller {
     return ok(result)
   }
 
-  override buildValidators (_httpRequest: HttpRequest): Validator | undefined {
-    return undefined
+  override buildValidators (httpRequest: HttpRequestWithFile): Validator | undefined {
+    if (!httpRequest.file) {
+      return {
+        validate: () => new Error('file is required')
+      }
+    }
+
+    const validators = ValidationBuilder
+      .of({ value: httpRequest.file, fieldName: 'file' })
+      .required()
+      .image({ allowed: ['image/png', 'image/jpg', 'image/jpeg'], maxSizeInMb: 5 })
+      .build()
+
+    return {
+      validate: (input: any) => {
+        for (const validator of validators) {
+          const error = validator.validate(input)
+          if (error) return error
+        }
+        return undefined
+      }
+    }
   }
 }
