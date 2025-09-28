@@ -1,5 +1,6 @@
 export interface HttpRequest<T = any> {
   body?: T
+  headers?: Record<string, string>
 }
 
 export interface HttpResponse<T = any> {
@@ -19,6 +20,11 @@ export const badRequest = (error: Error): HttpResponse<Error> => ({
 
 export const unauthorized = (error: Error): HttpResponse<Error> => ({
   statusCode: 401,
+  data: error
+})
+
+export const forbidden = (error: Error): HttpResponse<Error> => ({
+  statusCode: 403,
   data: error
 })
 

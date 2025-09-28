@@ -11,3 +11,10 @@ export class ValidationError extends Error {
     this.name = 'ValidationError'
   }
 }
+
+export class AccessDeniedError extends Error {
+  constructor () {
+    super('Access denied')
+    this.name = 'AccessDeniedError'
+  }
+}
