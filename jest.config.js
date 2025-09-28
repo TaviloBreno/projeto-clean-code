@@ -15,8 +15,5 @@ module.exports = {
   transform: {
     '.+\\.ts$': 'ts-jest'
   },
-  clearMocks: true,
-  moduleNameMapping: {
-    '@/(.*)': '<rootDir>/src/$1'
-  }
+  clearMocks: true
 }
