@@ -1,16 +1,14 @@
-import { type Repository, type DataSource } from 'typeorm'
 import { type LoadUserAccount, type SaveFacebookAccount } from '../../../../data/contracts/repos'
+import { BaseRepository } from '@/infra/db/typeorm/repositories/base-repository'
 import { User } from '../entities'
 
-export class UserAccountRepository implements LoadUserAccount, SaveFacebookAccount {
-  private readonly userRepo: Repository<User>
-
-  constructor (dataSource: DataSource) {
-    this.userRepo = dataSource.getRepository(User)
+export class UserAccountRepository extends BaseRepository<User> implements LoadUserAccount, SaveFacebookAccount {
+  constructor () {
+    super(User)
   }
 
   async load ({ email }: LoadUserAccount.Params): Promise<LoadUserAccount.Result> {
-    const user = await this.userRepo.findOne({ where: { email } })
+    const user = await this.findOne({ where: { email } })
     if (user !== null) {
       return {
         id: user.id,
@@ -24,18 +22,20 @@ export class UserAccountRepository implements LoadUserAccount, SaveFacebookAccou
     let userId: string
 
     if (params.id !== undefined) {
-      await this.userRepo.update({ id: params.id }, {
+      await this.update({ id: params.id }, {
         name: params.name,
         facebookId: params.facebookId
       })
       userId = params.id
     } else {
-      const user = await this.userRepo.save({
+      const repository = this.getRepository()
+      const user = repository.create({
         name: params.name,
         email: params.email,
         facebookId: params.facebookId
       })
-      userId = user.id
+      const savedUser = await repository.save(user)
+      userId = savedUser.id
     }
 
     return { id: userId }

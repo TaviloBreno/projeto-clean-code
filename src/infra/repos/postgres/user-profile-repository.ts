@@ -1,12 +1,10 @@
-import { type Repository, getRepository } from 'typeorm'
 import { type SaveUserPicture, type LoadUserProfile } from '@/data/contracts/repos/user-profile'
+import { BaseRepository } from '@/infra/db/typeorm/repositories/base-repository'
 import { PgUser } from '@/infra/repos/postgres/entities/user'
 
-export class PgUserProfileRepository implements SaveUserPicture, LoadUserProfile {
-  private readonly pgUserRepo: Repository<PgUser>
-
+export class PgUserProfileRepository extends BaseRepository<PgUser> implements SaveUserPicture, LoadUserProfile {
   constructor () {
-    this.pgUserRepo = getRepository(PgUser)
+    super(PgUser)
   }
 
   async savePicture (params: SaveUserPicture.Params): Promise<SaveUserPicture.Result> {
@@ -18,12 +16,12 @@ export class PgUserProfileRepository implements SaveUserPicture, LoadUserProfile
       updateData.initials = params.initials
     }
 
-    await this.pgUserRepo.update({ id: params.id }, updateData)
+    await this.update({ id: params.id }, updateData)
     return undefined
   }
 
   async load (params: LoadUserProfile.Params): Promise<LoadUserProfile.Result> {
-    const user = await this.pgUserRepo.findOne({
+    const user = await this.findOne({
       where: { id: params.id },
       select: ['name']
     })

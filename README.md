@@ -5,10 +5,11 @@
 [![Architecture](https://img.shields.io/badge/architecture-Clean%20Architecture-blue)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 [![TDD](https://img.shields.io/badge/methodology-TDD-red)](https://en.wikipedia.org/wiki/Test-driven_development)
 [![TypeScript](https://img.shields.io/badge/language-TypeScript-blue)](https://www.typescriptlang.org/)
+[![Database](https://img.shields.io/badge/database-Advanced%20Transaction%20Management-orange)](https://typeorm.io/)
 
-Este projeto demonstra um **sistema completo de autenticação com Facebook e gerenciamento de fotos de perfil** implementado com Clean Architecture, TDD (Test-Driven Development), e todos os Design Patterns modernos para um sistema robusto, escalável e mantível.
+Este projeto demonstra um **sistema completo de autenticação com Facebook, gerenciamento de fotos de perfil e sistema avançado de transações de banco de dados** implementado com Clean Architecture, TDD (Test-Driven Development), e todos os Design Patterns modernos para um sistema robusto, escalável e mantível.
 
-## 🏗️ Arquitetura Clean Architecture (5 Camadas)
+## 🏗️ Arquitetura Clean Architecture (5 Camadas) + Advanced Database Layer
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -35,17 +36,47 @@ Este projeto demonstra um **sistema completo de autenticação com Facebook e ge
 ┌─────────────────────────────────────────────────────────────┐
 │                      DATA LAYER                             │
 ├─────────────────────────────────────────────────────────────┤
-│     Services | Contracts (Repositories, APIs, Crypto)      │
+│  Services | Contracts (Repositories, APIs, Crypto)         │
 │ FacebookAuthService | ChangeProfilePictureService          │
+│       UserService (Transaction Management)                  │
 └─────────────────────────────────────────────────────────────┘
                               │
 ┌─────────────────────────────────────────────────────────────┐
-│                 INFRASTRUCTURE LAYER                        │
+│              INFRASTRUCTURE LAYER                           │
 ├─────────────────────────────────────────────────────────────┤
-│ APIs | HTTP Clients | Database (TypeORM) | JWT | AWS S3    │
-│   UUID Generator | File Storage | Anti Corruption Layer    │
+│     APIs | HTTP Clients | Advanced Database Layer          │
+│ TypeORM + Singleton Managers + Decorator Transactions      │
+│  ConnectionManager | TransactionManager | BaseRepository    │
+│   UUID Generator | File Storage | AWS S3 Integration       │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+## 🗄️ Sistema Avançado de Gerenciamento de Banco de Dados
+
+### 🔧 Configuração Dinâmica de DataSource
+- **Configuração baseada em ambiente**: Suporte automático para SQLite (testes) e PostgreSQL (produção)
+- **Ormconfig dinâmico**: Configuração automática baseada em `NODE_ENV`
+- **Type safety completo**: Integração perfeita com TypeScript
+
+### 🏗️ Padrão Singleton para Gerenciamento de Conexão
+- **ConnectionManager**: Singleton para gerenciar o ciclo de vida das conexões
+- **TransactionManager**: Singleton para gerenciar transações com suporte a aninhamento
+- **Thread-safe**: Operações seguras em ambientes concurrent
+
+### 🎯 Padrão Decorator para Transações
+```typescript
+@DbTransaction
+async createUser(userData: UserData): Promise<User> {
+  // Método automaticamente executado em transação
+  // Suporte a rollback automático em caso de erro
+  // Suporte a transações aninhadas
+}
+```
+
+### 📦 BaseRepository Pattern
+- **Abstração unificada**: Todos os repositórios estendem BaseRepository
+- **Type safety**: Generics para garantir tipos corretos
+- **Transaction awareness**: Integração automática com o sistema de transações
 
 ## 🛠️ Stack Tecnológica Completa
 

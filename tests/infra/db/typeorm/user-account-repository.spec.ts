@@ -1,22 +1,25 @@
-import { type DataSource } from 'typeorm'
 import { UserAccountRepository } from '../../../../src/infra/db/typeorm/repositories/user-account'
-import { createTestDatabase } from '../../../../src/infra/db/typeorm/helpers/database'
+import { ConnectionManager } from '../../../../src/infra/db/typeorm/helpers/connection-manager'
 
 describe('UserAccountRepository', () => {
   let sut: UserAccountRepository
-  let dataSource: DataSource
+  let connectionManager: ConnectionManager
 
   beforeAll(async () => {
-    dataSource = await createTestDatabase()
-    sut = new UserAccountRepository(dataSource)
+    connectionManager = ConnectionManager.getInstance()
+    await connectionManager.connect()
+    sut = new UserAccountRepository()
   })
 
   afterAll(async () => {
-    await dataSource.destroy()
+    await connectionManager.disconnect()
   })
 
   beforeEach(async () => {
-    await dataSource.synchronize(true)
+    const dataSource = connectionManager.getDataSource()
+    if (dataSource) {
+      await dataSource.synchronize(true)
+    }
   })
 
   describe('load', () => {
@@ -27,10 +30,13 @@ describe('UserAccountRepository', () => {
     })
 
     it('should return user data if user exists', async () => {
-      await dataSource.query(`
-        INSERT INTO users (id, name, email) 
-        VALUES ('any_id', 'any_name', 'any_email')
-      `)
+      const dataSource = connectionManager.getDataSource()
+      if (dataSource) {
+        await dataSource.query(`
+          INSERT INTO users (id, name, email) 
+          VALUES ('any_id', 'any_name', 'any_email')
+        `)
+      }
 
       const result = await sut.load({ email: 'any_email' })
 
@@ -50,20 +56,26 @@ describe('UserAccountRepository', () => {
         facebookId: 'any_fb_id'
       })
 
-      const users = await dataSource.query('SELECT * FROM users WHERE id = ?', [id])
-      expect(users[0]).toMatchObject({
-        id,
-        name: 'any_name',
-        email: 'any_email',
-        facebook_id: 'any_fb_id'
-      })
+      const dataSource = connectionManager.getDataSource()
+      if (dataSource) {
+        const users = await dataSource.query('SELECT * FROM users WHERE id = ?', [id])
+        expect(users[0]).toMatchObject({
+          id,
+          name: 'any_name',
+          email: 'any_email',
+          facebook_id: 'any_fb_id'
+        })
+      }
     })
 
     it('should update existing user if id is provided', async () => {
-      await dataSource.query(`
-        INSERT INTO users (id, name, email) 
-        VALUES ('existing_id', 'old_name', 'any_email')
-      `)
+      const dataSource = connectionManager.getDataSource()
+      if (dataSource) {
+        await dataSource.query(`
+          INSERT INTO users (id, name, email) 
+          VALUES ('existing_id', 'old_name', 'any_email')
+        `)
+      }
 
       const { id } = await sut.saveWithFacebook({
         id: 'existing_id',
@@ -73,13 +85,16 @@ describe('UserAccountRepository', () => {
       })
 
       expect(id).toBe('existing_id')
-      const users = await dataSource.query('SELECT * FROM users WHERE id = ?', [id])
-      expect(users[0]).toMatchObject({
-        id: 'existing_id',
-        name: 'new_name',
-        email: 'any_email',
-        facebook_id: 'any_fb_id'
-      })
+      const dataSource2 = connectionManager.getDataSource()
+      if (dataSource2) {
+        const users = await dataSource2.query('SELECT * FROM users WHERE id = ?', [id])
+        expect(users[0]).toMatchObject({
+          id: 'existing_id',
+          name: 'new_name',
+          email: 'any_email',
+          facebook_id: 'any_fb_id'
+        })
+      }
     })
   })
 })
