@@ -1,5 +1,5 @@
 import { type Repository, type DataSource } from 'typeorm'
-import { type LoadUserAccount, type SaveFacebookAccount } from '../../../data/contracts/repos'
+import { type LoadUserAccount, type SaveFacebookAccount } from '../../../../data/contracts/repos'
 import { User } from '../entities'
 
 export class UserAccountRepository implements LoadUserAccount, SaveFacebookAccount {
@@ -17,6 +17,7 @@ export class UserAccountRepository implements LoadUserAccount, SaveFacebookAccou
         name: user.name
       }
     }
+    return undefined
   }
 
   async saveWithFacebook (params: SaveFacebookAccount.Params): Promise<SaveFacebookAccount.Result> {
