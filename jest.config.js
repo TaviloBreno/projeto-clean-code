@@ -3,7 +3,7 @@ module.exports = {
   testEnvironment: 'node',
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
-    '!<rootDir>/src/main/**',
+    '!<rootDir>/src/main/server.ts',
     '!<rootDir>/src/**/*-protocols.ts',
     '!**/protocols/**',
     '!**/test/**'
@@ -15,5 +15,8 @@ module.exports = {
   transform: {
     '.+\\.ts$': 'ts-jest'
   },
-  clearMocks: true
+  clearMocks: true,
+  moduleNameMapper: {
+    '@/(.*)': '<rootDir>/src/$1'
+  }
 }
